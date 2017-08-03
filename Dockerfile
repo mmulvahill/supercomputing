@@ -29,7 +29,7 @@ RUN apt-get -qq update \
         
 # Install R packages not in tidyverse
 RUN install2.r --error \
-        future 
+        future digest globals listenv future.BatchJobs doFuture
         #pbapply pryr assertr ggthemes 
 
 RUN R -e "library(devtools); install_github('BayesPulse/pulsatile');" 
