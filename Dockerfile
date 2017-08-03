@@ -4,7 +4,7 @@
 ################################################################################
 
 # get the base image, this one has R, RStudio and pandoc
-FROM rocker/verse:3.4.1
+FROM rocker/r-base
 
 # required
 MAINTAINER Matt Mulvahill <matthew.mulvahill@ucdenver.edu>
@@ -29,7 +29,7 @@ RUN apt-get -qq update \
         
 # Install R packages not in tidyverse
 RUN install2.r --error \
-        future digest globals listenv future.BatchJobs doFuture
+        tidyverse future digest globals listenv future.BatchJobs doFuture
         #pbapply pryr assertr ggthemes 
 
 RUN R -e "library(devtools); install_github('BayesPulse/pulsatile');" 
