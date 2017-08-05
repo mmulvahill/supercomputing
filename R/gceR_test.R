@@ -20,6 +20,13 @@ gce_get_project()
 
 
 ########################################
+# Executing script on gce with ssh/bash/docker/gcloud(?)
+########################################
+# ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/tmp/RtmpM7bHYu/hosts -i /home/matt/.ssh/google_compute_engine matt@35.188.148.225
+# ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/tmp/RtmpM7bHYu/hosts -i /home/matt/.ssh/google_compute_engine matt@35.188.148.225 'mulvahim && docker run --name="harbor_hf1gvc" rocker/r-base Rscript -e 1+1'
+# ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/tmp/RtmpM7bHYu/hosts -i /home/matt/.ssh/google_compute_engine matt@35.188.148.225 'docker run --name="harbor_hf1gvc" rocker/r-base Rscript -e 1+1'
+
+########################################
 # Dockerfiles w/ gceR
 ########################################
 
@@ -53,27 +60,101 @@ my_container <- gce_tag_container("pulsatile-container", project = "thesis-run")
 ########################################
 preemptible <- list(preemptible = TRUE)
 
-vm2 <- gce_vm(name = "test6",
+
+#-----------------------------------
+# Test creation via gce_vm()
+# THIS DOES IT -- JUST TAKES A BIT FOR CONTAINTER TO LOAD #############
+#-----------------------------------
+my_container <- gce_tag_container("pulsatile-container", project = "thesis-run")
+preemptible  <- list(preemptible = TRUE)
+vm7 <- gce_vm(name = "vm7",
               predefined_type = "n1-standard-1",
               template        = "r-base",
               dynamic_image   = my_container,
               scheduling      = preemptible)
-vm8 <- gce_vm_template(name = "vm8",
+gce_ssh_setup(vm7)
+docker_cmd(vm7, "images", capture_text = TRUE)
+# BUT, future's plan(cluster, ...) defaults to rocker/r-base for some reason....
+
+
+
+#-----------------------------------
+my_container <- gce_tag_container("pulsatile-container", project = "thesis-run")
+preemptible  <- list(preemptible = TRUE)
+vm6 <- gce_vm(name = "vm6",
+              predefined_type = "n1-standard-1",
+              template        = "rstudio-hadleyverse",
+              dynamic_image   = my_container,
+              scheduling      = preemptible,
+              username = "matt",
+              password = "matt")
+gce_ssh_setup(vm6)
+docker_cmd(vm3, "images")
+docker_cmd(vm4, "images")
+docker_cmd(vm5, "images")
+docker_cmd(vm6, "images")
+
+
+
+##### Issue is in this function in gceR
+#### ---- update package by passing 'dynamic_image' info to this function? exists in text of vm$metadata$items$value, anywhere else?
+makeDockerClusterPSOCK <- function(workers, 
+                                   docker_image = "rocker/r-base", 
+                                   rscript = c("docker", "run", "--net=host", docker_image, "Rscript"), 
+                                   rscript_args = NULL, install_future = TRUE, ..., verbose = FALSE) {
+  ## Should 'future' package be installed, if not already done?
+  if (install_future) {
+    rscript_args <- c("-e", 
+                      shQuote(sprintf("if (!requireNamespace('future', quietly = TRUE)) install.packages('future', quiet = %s)", 
+                                      !verbose)), 
+                      rscript_args)
+  }
+  
+  future::makeClusterPSOCK(workers, rscript = rscript, rscript_args = rscript_args, ..., verbose = verbose)
+}
+
+
+
+library(future)
+vm7 <- gce_ssh_setup(vm7)
+plan(cluster, workers = list(vm7)) # NOTE: Why does this load rocker/r-base???
+a %<-% Sys.getpid()
+test_mean %<-% mean(rnorm(n = 10000000, mean = 50, sd = 10))
+test_mean %<-% require(pulsatile)
+test_mean %<-% require(devtools)
+
+
+library(pulsatile)
+simdata <- simulate_pulse()
+simspec <- pulse_spec()
+my_big_function <- future({
+	test <-	fit_pulse(.data = simdata, spec = simspec, iters = 50000)
+})
+fit <- value(my_big_function)
+
+
+
+vm4 <- gce_vm_template(name = "vm4",
                        predefined_type = "n1-standard-1",
                        template        = "r-base",
                        dynamic_image   = my_container,
                        scheduling      = preemptible)
-vm4 <- gce_vm_container(name = "vm4",
-                        predefined_type = "n1-standard-1",
-                        template        = "r-base",
-                        dynamic_image   = my_container,
-                        scheduling      = preemptible)
+# View available/installed docker containers
+docker_run(vm4, "images")
+
+
+# Doesn't work -- need cloud_init file for this fn
+# vm4 <- gce_vm_container(name = "vm4",
+#                         predefined_type = "n1-standard-1",
+#                         template        = "r-base",
+#                         dynamic_image   = my_container,
+#                         scheduling      = preemptible)
 
 # How to get already running or existing instances
-rm(vm4, vm2, vm3)
+rm(vm1, vm2)
 gce_list_instances()
-vm3 <- gce_vm("vm3")
-vm2 <- gce_vm("test6")
+vm1 <- gce_vm("vm1")
+vm2 <- gce_vm("vm2")
 
 
 
@@ -92,10 +173,11 @@ vm7 <- gce_vm_container(name = "vm7",
                         scheduling      = list(preemptible = TRUE),
                         cloud_init = cloud_init_file,
                         metadata   = upload_meta)
-vm8 <- gce_vm("vm8")
+vm7 <- gce_vm("vm7")
+# vm8 <- gce_vm("vm8")
 library(future)
-vm8 <- gce_ssh_setup(vm8)
-plan(cluster, workers = list(vm8))
+vm7 <- gce_ssh_setup(vm7)
+plan(cluster, workers = list(vm7))
 a %<-% Sys.getpid()
 test_mean %<-% mean(rnorm(n = 10000000, mean = 50, sd = 10))
 test_mean %<-% require(pulsatile)
@@ -107,10 +189,11 @@ test_mean %<-% library()
 
 
 gce_list_instances()
-gce_vm_stop(vm3)
-gce_vm_stop(vm2)
-gce_vm_stop(vm6)
-gce_vm_stop(vm8)
+gce_vm_delete(vm1)
+gce_vm_delete(vm3)
+gce_vm_delete(vm4)
+gce_vm_delete(vm7)
+rm(vm1, vm2, vm7)
 
 
 
@@ -139,3 +222,11 @@ gce_vm_template(name = "test4",
                 scheduling      = preemptible)
 
 
+
+setup_vms <- function(vm, container) {
+  doc
+  docker_run(vm, container, 
+
+
+
+}
