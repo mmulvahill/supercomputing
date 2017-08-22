@@ -1,0 +1,6 @@
+[submodule "lib/RMACC"]
+	path = lib/RMACC
+	url = git@github.com:ResearchComputing/RMACC.git
+[submodule "lib/container-wrf"]
+	path = lib/container-wrf
+	url = git@github.com:NCAR/container-wrf.git
