@@ -18,3 +18,14 @@ researching which computing options fit with which workload type.
     - Best for HTC, individual wall times up to several hours, has preemption
       but automatically handles it (retries job)
 
+
+- OpenScience Grid links
+    - [](https://swc-osg-workshop.github.io/OSG-UserTraining-RMACC17/novice/DHTC/04-HTCondor-Submitting.html)
+    - [](https://swc-osg-workshop.github.io/OSG-UserTraining-RMACC17/novice/DHTC/04a-ScalingUp-python.html)
+    - [](http://research.cs.wisc.edu/htcondor/manual/latest/)
+    - [](https://support.opensciencegrid.org/support/solutions/articles/12000006512-guidelines-for-data-managment-in-osg-storage-and-transfer)
+- Scientific Workflow software
+    - [](https://pegasus.isi.edu/documentation/tutorial_scientific_workflows.php)
+
+
+
