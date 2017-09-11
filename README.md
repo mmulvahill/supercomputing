@@ -7,9 +7,9 @@ Key terminology
 ---------------
 
 -   High-performance computing (HPC)
--   Individual programs that take advantage of multiple cores and multiple nodes typicaly via MPI.
+    -   Individual programs that take advantage of multiple cores and multiple nodes typicaly via MPI.
 -   High-throughput computing (HTC)
--   Many independent executions of a single serial program.
+    -   Many independent executions of a single serial program.
 
 Open Science Grid
 -----------------
