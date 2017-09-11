@@ -17,10 +17,10 @@ Open Science Grid
 -   [OpenScienceGrid Training](https://swc-osg-workshop.github.io/OSG-UserTraining-RMACC17/index.html)
     -   Best for HTC, individual wall times up to several hours, has preemption but automatically handles it (retries job)
 -   OpenScience Grid links
-    -   [](https://swc-osg-workshop.github.io/OSG-UserTraining-RMACC17/novice/DHTC/04-HTCondor-Submitting.html)
-    -   [](https://swc-osg-workshop.github.io/OSG-UserTraining-RMACC17/novice/DHTC/04a-ScalingUp-python.html)
-    -   [](http://research.cs.wisc.edu/htcondor/manual/latest/)
-    -   [](https://support.opensciencegrid.org/support/solutions/articles/12000006512-guidelines-for-data-managment-in-osg-storage-and-transfer)
+    -   [Submitting and monitoring jobs](https://swc-osg-workshop.github.io/OSG-UserTraining-RMACC17/novice/DHTC/04-HTCondor-Submitting.html)
+    -   ['Scaling up' example](https://swc-osg-workshop.github.io/OSG-UserTraining-RMACC17/novice/DHTC/04a-ScalingUp-python.html)
+    -   [HTCondor Manual](http://research.cs.wisc.edu/htcondor/manual/latest/)
+    -   [Data storage and transfer guidelines](https://support.opensciencegrid.org/support/solutions/articles/12000006512-guidelines-for-data-managment-in-osg-storage-and-transfer)
 
 Cluster computing on Google Cloud
 ---------------------------------
